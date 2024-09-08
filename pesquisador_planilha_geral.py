@@ -52,12 +52,10 @@ def search(filepath:str, sheet:str, col: int, line: int, search_term: str):
     The columns MUST be in this order: event name, date, description.
     If not, the code may not work properly.'''
 
-    wb = xls.load_workbook(filename=filepath)    # open the planilha and the worksheet
-    ws = wb[sheet]
-    events = get_events(filepath, sheet, col, line)
+    event_list = get_events(filepath, sheet, col, line)
 
     names_set = set()
-    for event in events:
+    for event in event_list:
         event_name = event.get_name()
         names_set.add(event_name)
 
@@ -65,8 +63,49 @@ def search(filepath:str, sheet:str, col: int, line: int, search_term: str):
         webbrowser.open(url=f'https://duckduckgo.com/?t=ffab&q={name}+{search_term}&atb=v388-1&ia=web')
         time.sleep(3)
 
+def sort_events(event_list:list):
+    unsorted_event_list = event_list.copy()
+    sorted_event_list = []
+
+    for i in range(0, len(event_list)):
+        earliest_event = unsorted_event_list[0]
+        for j in range(0, len(unsorted_event_list)):
+            variable_event = unsorted_event_list[j]
+            if variable_event.get_date() < earliest_event.get_date():
+                earliest_event = variable_event
+        sorted_event_list.append(earliest_event)
+        unsorted_event_list.remove(earliest_event)
+
+    return sorted_event_list
+
     
-#def order(filepath:str, sheet:str, col:int, line:int):
+def order(filepath:str, sheet:str, col:int, line:int):
+    unsorted_event_list = get_events(filepath, sheet, col, line)
+    
+    sorted_event_list = sort_events(unsorted_event_list)
+
+    wb = xls.load_workbook(filename=filepath)
+    ws = wb[sheet]
+
+    for i in range(0,len(sorted_event_list)):
+        event = sorted_event_list[i]
+
+        name = event.get_name()
+        date = event.get_date()
+        description = event.get_description()
+        print(description)
+
+        curr_line = line + i
+
+        namecell = ws.cell(column=col, row=curr_line)
+        namecell.value = name
+        datecell = ws.cell(column=col+1, row=curr_line)
+        datecell.value = date
+        descriptioncell = ws.cell(column=col+2, row=curr_line)
+        descriptioncell.value = description
+    wb.save(filename=filepath)
+
+
 if __name__ == '__main__':
     planilha_path = 'C:/Users/USUARIO/VSCodeProjects/Planinha_Olimpiadas/pessoais/Olimpiadas_Copia.xlsx'
-    print(get_events(filepath=planilha_path, sheet='2024 v2', col=2, line=3))
+    order(filepath=planilha_path, sheet='2024 v2', col=2, line=25)

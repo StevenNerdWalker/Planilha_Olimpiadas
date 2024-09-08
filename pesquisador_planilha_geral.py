@@ -93,7 +93,6 @@ def order(filepath:str, sheet:str, col:int, line:int):
         name = event.get_name()
         date = event.get_date()
         description = event.get_description()
-        print(description)
 
         curr_line = line + i
 

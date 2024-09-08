@@ -104,8 +104,3 @@ def order(filepath:str, sheet:str, col:int, line:int):
         descriptioncell = ws.cell(column=col+2, row=curr_line)
         descriptioncell.value = description
     wb.save(filename=filepath)
-
-
-if __name__ == '__main__':
-    planilha_path = 'C:/Users/USUARIO/VSCodeProjects/Planinha_Olimpiadas/pessoais/Olimpiadas_Copia.xlsx'
-    order(filepath=planilha_path, sheet='2024 v2', col=2, line=25)
